@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CHINESE QUESTION CARDS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Serif+SC:wght@700;900&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red-dark:#4a0407;
+  --red-main:#981118;
+  --red-bright:#d31923;
+  --gold-dark:#997116;
+  --gold-main:#d9a62e;
+  --gold-light:#f9ebaa;
+  --cream:#fdf8ec;
+  --ink:#2b0507;
+  --cn:"Noto Serif SC","Songti SC",serif;
+  --th:"Sarabun",sans-serif;
+  --en:"Cinzel",serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--th);
+  color:var(--ink);
+  background:var(--cream);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  height:100dvh;
+  background-image:
+    radial-gradient(circle at 50% 30%, rgba(249, 235, 170, 0.4) 0%, transparent 70%),
+    radial-gradient(circle at 50% 100%, rgba(152, 17, 24, 0.08) 0%, transparent 60%),
+    repeating-radial-gradient(circle at 50% 50%, transparent 0, transparent 20px, rgba(217, 166, 46, 0.05) 20px, rgba(217, 166, 46, 0.05) 21px);
+}
+button{font:inherit;cursor:pointer;border:0;outline:none}
+button:focus-visible{outline:3px solid var(--gold-main);outline-offset:3px}
+
+.screen{display:none;flex:1;min-height:0;flex-direction:column;align-items:center;padding:1rem;position:relative}
+.screen.on{display:flex}
+
+/* Tools Bar */
+.tools{
+  display:flex;
+  gap:.6rem;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+  padding:.8rem 1.2rem;
+  position:relative;
+  z-index:50;
+  flex:none;
+}
+.tools button{
+  background: linear-gradient(180deg, #ffffff 0%, #fef5d8 60%, #f7e3a3 100%);
+  color: var(--red-dark);
+  border: 1.5px solid var(--gold-main);
+  border-radius: 999px;
+  padding: .45em 1em;
+  font-size: clamp(.8rem, 1vw, .95rem);
+  font-weight: 700;
+  box-shadow: 0 4px 0 var(--gold-dark), 0 6px 15px rgba(74, 4, 7, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+  transition: all .2s ease;
+  position: relative;
+}
+.tools button:hover{
+  background: linear-gradient(180deg, #c81a24 0%, var(--red-main) 60%, var(--red-dark) 100%);
+  color: var(--gold-light);
+  border-color: var(--gold-light);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #300204, 0 10px 20px rgba(74, 4, 7, 0.3);
+}
+.tools button:active{
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #300204, 0 4px 10px rgba(74, 4, 7, 0.2);
+}
+
+/* Buttons */
+.btn{
+  background:linear-gradient(180deg, #c81a24 0%, var(--red-main) 60%, var(--red-dark) 100%);
+  color:var(--gold-light);
+  padding:.75em 1.8em;
+  border-radius:999px;
+  font-weight:700;
+  font-size:clamp(1rem, 1.5vw, 1.3rem);
+  border:1px solid var(--gold-light);
+  box-shadow:0 6px 0 #300204, 0 12px 20px rgba(74, 4, 7, 0.35), inset 0 2px 2px rgba(255,255,255,0.3);
+  text-shadow:0 2px 4px rgba(0,0,0,0.5);
+  transition:all .15s ease;
+}
+.btn:hover{transform:translateY(-3px);box-shadow:0 9px 0 #300204, 0 15px 25px rgba(74, 4, 7, 0.4), inset 0 2px 2px rgba(255,255,255,0.4)}
+.btn:active{transform:translateY(3px);box-shadow:0 3px 0 #300204, 0 6px 10px rgba(74, 4, 7, 0.3)}
+
+.btn.alt{
+  background:linear-gradient(180deg, #ffffff 0%, #fef5d8 100%);
+  color:var(--red-dark);
+  border:1.5px solid var(--gold-main);
+  box-shadow:0 6px 0 var(--gold-dark), 0 10px 18px rgba(0,0,0,0.12);
+  text-shadow:none;
+}
+.btn.alt:hover{background:linear-gradient(180deg, #ffffff 0%, #fde6a4 100%);box-shadow:0 8px 0 var(--gold-dark), 0 12px 22px rgba(217, 166, 46, 0.25)}
+.btn.alt:active{box-shadow:0 2px 0 var(--gold-dark)}
+
+.btn.sm{font-size:clamp(.85rem, 1.1vw, 1rem);padding:.5em 1.2em}
+.btn[disabled]{opacity:.5;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+
+.ic{width:1.2em;height:1.2em;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+i[data-i]{display:inline-flex;line-height:0}
+.btn,.tools button{display:inline-flex;align-items:center;justify-content:center;gap:.5em}
+
+/* Menu Screen */
+#menu{justify-content:center;text-align:center}
+#menu::after{
+  content:"";position:absolute;inset:1.5rem;
+  border:2px solid var(--gold-main);border-radius:2.5vmin;
+  pointer-events:none;
+  box-shadow:inset 0 0 0 .4rem rgba(217,166,46,.15), 0 0 30px rgba(217,166,46,0.1);
+}
+#menu::before{
+  content:"福";position:absolute;font-family:var(--cn);
+  font-size:68vmin;color:rgba(152, 17, 24, 0.035);
+  line-height:1;pointer-events:none;top:50%;left:50%;transform:translate(-50%,-50%);
+}
+
+.lanterns{position:absolute;top:0;left:0;right:0;display:flex;justify-around:space-around;pointer-events:none;z-index:2}
+.lanterns span{width:clamp(4rem, 8vw, 7.5rem);transform-origin:top center;animation:sway 4.5s ease-in-out infinite alternate;display:block}
+.lanterns svg{width:100%;display:block;filter:drop-shadow(0 1rem 1.2rem rgba(74,4,7,0.3))}
+.lanterns span::before{content:"";display:block;width:2px;height:5vh;background:linear-gradient(to bottom, var(--gold-main), var(--gold-light));margin:0 auto}
+.lanterns span:nth-child(2){animation-delay:-1.8s;margin-top:-2.5vh}
+.lanterns span:nth-child(3){animation-delay:-3.1s}
+@keyframes sway{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}
+
+h1{
+  font-family:var(--en);
+  font-size:clamp(2.4rem, 6.5vw, 6.8rem);
+  font-weight:900;
+  letter-spacing:.06em;
+  line-height:1.05;
+  background:linear-gradient(180deg, #d31923 0%, #7a0c12 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 4px 0 #f3d27a) drop-shadow(0 12px 24px rgba(74,4,7,0.3));
+  position:relative;
+  margin-bottom:.5rem;
+}
+
+.tag{
+  font-size:clamp(1.1rem, 2.2vw, 2.2rem);
+  margin:1rem 0 2.5rem;
+  color:var(--red-dark);
+  font-weight:700;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:1rem;
+}
+.tag::before,.tag::after{content:"";display:inline-block;width:8vw;height:2px;background:linear-gradient(90deg, transparent, var(--gold-main), transparent)}
+
+.menu-btns{display:flex;gap:1.2rem;flex-wrap:wrap;justify-content:center;position:relative;z-index:10}
+
+/* Cards Screen */
+.head{display:flex;gap:1.5rem;align-items:center;justify-content:center;padding:.4rem 1rem 1rem;min-height:4.5rem;flex-wrap:wrap}
+.head h2{font-family:var(--cn);font-size:clamp(1.4rem, 2.4vw, 2.5rem);color:var(--red-dark);letter-spacing:.05em}
+.status{
+  font-weight:700;font-size:clamp(1rem, 1.4vw, 1.4rem);
+  background:linear-gradient(135deg, #ffffff, #fef8eb);
+  border:1.5px solid var(--gold-main);
+  padding:.3em 1.2em;border-radius:999px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.06);
+  color:var(--red-dark);
+}
+.grid{
+  display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);
+  gap:1.6vmin;aspect-ratio:1.7/1;width:min(94vw,calc((100dvh - 12rem)*1.7));
+}
+.card{perspective:1000px;container-type:size;cursor:pointer;border-radius:1.5vmin}
+.inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.3,1.2,.4,1)}
+.card.flipped .inner{transform:rotateY(180deg)}
+
+.face{
+  position:absolute;inset:0;border-radius:inherit;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+
+.card .front{
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 236, 170, 0.3), transparent 60%),
+    repeating-conic-gradient(from 0deg at 50% 50%, rgba(243, 210, 122, 0.1) 0 6deg, transparent 6deg 12deg),
+    linear-gradient(165deg, #d31923 0%, #8d0d14 70%, #4a0407 100%);
+  box-shadow:0 1vmin 2vmin rgba(74, 4, 7, 0.35), inset 0 0 0 .6cqw #e9bf55, inset 0 0 0 1.6cqw #8d0d14, inset 0 0 0 2.2cqw #f3d27a;
+  border-radius:1.5vmin;
+}
+.card .front::before{content:"";position:absolute;inset:5cqw;border:1px dashed rgba(243, 210, 122, 0.6);border-radius:1cqw}
+.card .front::after{
+  content:"";position:absolute;width:54cqw;height:54cqw;top:50%;left:50%;translate:-50% -54%;
+  border-radius:50%;
+  background:radial-gradient(circle, #fff7d6, #f3d27a 60%, #b88a1b);
+  box-shadow:0 0 0 1.2cqw rgba(243, 210, 122, 0.35), 0 .8cqw 1.8cqw rgba(0, 0, 0, 0.4);
+}
+.card .front b{position:relative;z-index:1;color:var(--red-dark);font-size:min(34cqw, 26cqh);translate:0 -8%;font-family:var(--en)}
+.card .front i{position:absolute;bottom:6cqw;margin:0;font-size:min(12cqw, 9cqh);color:var(--gold-light);z-index:1}
+
+.card .back{
+  transform:rotateY(180deg);
+  background:linear-gradient(145deg, #ffffff 0%, #fef5d8 100%);
+  box-shadow:0 1vmin 2vmin rgba(74, 4, 7, 0.25), inset 0 0 0 1.5cqw #ffffff, inset 0 0 0 2cqw var(--gold-main);
+  color:var(--red-dark);text-align:center;padding:0 4cqw;border-radius:1.5vmin;
+}
+.back .n{position:absolute;top:5cqw;left:6cqw;font-weight:700;font-size:9cqw;color:var(--gold-main);font-family:var(--en)}
+.back .q{font-family:var(--cn);font-weight:700;font-size:min(11cqw, 13.5cqh);line-height:1.25}
+.back em{position:absolute;bottom:5cqw;font-style:normal;font-size:7.5cqw;color:var(--gold-dark);font-weight:600}
+
+.card:not(.flipped):hover .inner{transform:translateY(-1.2vmin) scale(1.04)}
+.card.hl .inner{transform:translateY(-1.5vmin) scale(1.08)}
+.card.hl .front{box-shadow:0 0 0 .8vmin var(--gold-light), 0 0 3.5vmin var(--gold-main)}
+.card.opened .back{opacity:.85}
+
+/* Question Screen */
+#question{justify-content:center;gap:clamp(1rem, 2.5vh, 2rem)}
+.qpanel{
+  background:linear-gradient(145deg, #ffffff 0%, #fcf3d9 100%);
+  border:1vmin solid var(--gold-main);
+  outline:.4vmin solid var(--red-main);
+  outline-offset:-1.8vmin;
+  border-radius:3.5vmin;
+  box-shadow:0 2.5vmin 6vmin rgba(74, 4, 7, 0.25), inset 0 0 40px rgba(217, 166, 46, 0.15);
+  width:min(92vw, 1200px);
+  padding:clamp(2rem, 6vh, 4.5rem) 2rem;
+  text-align:center;
+  position:relative;
+  animation:pop .4s cubic-bezier(.17,.67,.37,1.2);
+}
+@keyframes pop{from{opacity:0;transform:scale(.92)}}
+.badge{
+  position:absolute;top:-2.4vmin;left:50%;translate:-50% 0;
+  background:linear-gradient(180deg, var(--red-bright), var(--red-dark));
+  color:var(--gold-light);
+  padding:.3em 1.6em;border-radius:999px;font-weight:700;
+  font-size:clamp(1rem, 1.6vw, 1.6rem);
+  border:.3vmin solid var(--gold-light);
+  box-shadow:0 4px 12px rgba(0,0,0,0.25);
+}
+.qtext{
+  font-family:var(--cn);font-weight:900;
+  color:var(--red-main);
+  font-size:clamp(3rem, 9vw, 11rem);
+  line-height:1.2;
+  text-shadow:0 2px 10px rgba(152, 17, 24, 0.15);
+}
+.vinfo{font-size:clamp(.85rem, 1.1vw, 1rem);color:var(--gold-dark);margin-top:.8rem;min-height:1.2em;font-weight:600}
+.wave{height:2.8rem;display:flex;gap:.4rem;align-items:center;justify-content:center;margin-top:1rem}
+.wave s{width:.45rem;height:.6rem;background:var(--gold-main);border-radius:999px;transition:height .2s}
+.wave.on s{animation:wv .7s ease-in-out infinite alternate;background:var(--red-main)}
+.wave.on s:nth-child(2n){animation-delay:-.3s}.wave.on s:nth-child(3n){animation-delay:-.5s}
+@keyframes wv{to{height:2.6rem}}
+
+.row{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;align-items:center}
+.speed{display:flex;border:2px solid var(--gold-main);border-radius:999px;overflow:hidden;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,0.05)}
+.speed button{padding:.5em 1.3em;background:transparent;color:var(--red-dark);font-weight:700;font-size:clamp(.85rem, 1.1vw, 1rem);transition:all .2s}
+.speed button.on{background:var(--red-main);color:var(--gold-light)}
+
+/* Summary Screen */
+#summary{justify-content:center;text-align:center;gap:1.5rem}
+#summary h2{font-family:var(--cn);font-size:clamp(2rem, 4.5vw, 4.5rem);color:var(--red-dark)}
+.big{
+  font-size:clamp(5rem, 15vw, 15rem);font-weight:900;
+  background:linear-gradient(180deg, #fce893 0%, #d9a62e 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 6px 0 var(--red-dark)) drop-shadow(0 15px 25px rgba(0,0,0,0.2));
+  line-height:1;font-family:var(--en);
+}
+
+/* Modal & Toast */
+#modal{position:fixed;inset:0;background:rgba(30, 2, 4, 0.75);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:60}
+#modal.on{display:flex}
+.mbox{
+  background:var(--cream);border:.5vmin solid var(--gold-main);border-radius:2.5vmin;
+  padding:2.2rem 2.6rem;max-width:min(92vw, 650px);font-size:clamp(1rem, 1.4vw, 1.25rem);line-height:1.7;
+  box-shadow:0 20px 50px rgba(0,0,0,0.4);
+}
+.mbox h3{color:var(--red-dark);margin-bottom:.8rem;font-size:1.6em;font-family:var(--cn)}
+.mbox ol{padding-left:1.5rem;margin-bottom:1.5rem}
+
+#toast{
+  position:fixed;bottom:2rem;left:50%;translate:-50% 0;
+  background:var(--red-dark);color:#fff;padding:.8em 1.6em;border-radius:14px;
+  z-index:70;max-width:90vw;text-align:center;display:none;border:2px solid var(--gold-main);
+  box-shadow:0 10px 25px rgba(0,0,0,0.3);
+}
+
+@media (max-width:700px){
+  body{overflow:auto;height:auto;min-height:100dvh}
+  .grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(4,1fr);aspect-ratio:.55/1;width:92vw}
+  .tools span{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="tools">
+ <button id="tHome" title="กลับหน้าหลัก"><i data-i="home"></i> <span>หน้าหลัก</span></button>
+ <button id="tGrid" title="กลับไปหน้ารวมการ์ด"><i data-i="cards"></i> <span>หน้ารวมการ์ด</span></button>
+ <button id="tReset" title="รีเซ็ตเกม"><i data-i="reset"></i> <span>รีเซ็ต</span></button>
+ <button id="tSfx" title="เปิด/ปิดเสียงประกอบ"><i data-i="on"></i> <span>เสียงประกอบ: เปิด</span></button>
+ <button id="tTts" title="เปิด/ปิดเสียงอ่าน"><i data-i="on"></i> <span>เสียงอ่าน: เปิด</span></button>
+ <button id="tFs" title="เต็มหน้าจอ"><i data-i="full"></i> <span>เต็มจอ</span></button>
+</div>
+
+<section class="screen on" id="menu">
+ <div class="lanterns"><span data-l></span><span data-l></span><span data-l></span></div>
+ <h1>CHINESE<br>QUESTION CARDS</h1>
+ <p class="tag">เปิดการ์ด ลุ้นคำถาม ฝึกพูดภาษาจีน</p>
+ <div class="menu-btns">
+  <button class="btn" id="mStart">เริ่มเกม</button>
+  <button class="btn alt" id="mRand">สุ่มการ์ด</button>
+  <button class="btn alt" id="mHow">วิธีการเล่น</button>
+ </div>
+</section>
+
+<section class="screen" id="cards">
+ <div class="head"><h2>เลือกการ์ดคำถาม</h2><span class="status" id="status">เปิดแล้ว 0/8</span><button class="btn sm" id="gRand"><i data-i="dice"></i> สุ่มการ์ด</button></div>
+ <div class="grid" id="grid"></div>
+</section>
+
+<section class="screen" id="question">
+ <div class="qpanel">
+  <div class="badge" id="qNo"></div>
+  <div class="qtext" id="qText"></div>
+  <div class="vinfo" id="vinfo"></div>
+  <div class="wave" id="wave"><s></s><s></s><s></s><s></s><s></s><s></s><s></s></div>
+ </div>
+ <div class="row">
+  <button class="btn" id="bPlay"><i data-i="on"></i> ฟังเสียง</button>
+  <button class="btn alt" id="bStop"><i data-i="stop"></i> หยุดเสียง</button>
+  <button class="btn alt" id="bReplay"><i data-i="replay"></i> เล่นซ้ำ</button>
+  <div class="speed" id="speed"><button data-r=".6">ช้า</button><button data-r=".9" class="on">ปกติ</button><button data-r="1.2">เร็ว</button></div>
+ </div>
+ <div class="row">
+  <button class="btn sm" id="bBack"><i data-i="back"></i> กลับไปหน้ารวมการ์ด</button>
+  <button class="btn sm" id="bNext"><i data-i="dice"></i> สุ่มการ์ดใบถัดไป</button>
+ </div>
+</section>
+
+<section class="screen" id="summary">
+ <h2>ยอดเยี่ยม! คุณเปิดการ์ดครบทั้ง 8 ใบแล้ว</h2>
+ <div class="big">8/8</div>
+ <p style="font-size:1.4rem;font-weight:700;color:var(--red-dark)">คุณเปิดการ์ดครบแล้ว!</p>
+ <button class="btn" id="sAgain">เล่นอีกครั้ง</button>
+</section>
+
+<div id="modal"><div class="mbox"><h3>วิธีการเล่น</h3><ol>
+ <li>กด "เริ่มเกม" แล้วคลิกการ์ดที่ต้องการ หรือกด "สุ่มการ์ด"</li>
+ <li>การ์ดจะพลิกและแสดงคำถามภาษาจีนขนาดใหญ่</li>
+ <li>กด "ฟังเสียง" เพื่อฟังเสียงอ่านภาษาจีนกลาง ปรับความเร็วได้ 3 ระดับ</li>
+ <li>การ์ดที่เปิดแล้วเปิดซ้ำไม่ได้ เปิดครบ 8 ใบจะแสดงสรุปผล</li></ol>
+ <button class="btn sm" id="mClose">ปิด</button></div></div>
+<div id="toast"></div>
+
+<script>
+/* ===== ข้อมูล ===== */
+const Q=["他是中国人吗？","他是留学生吗？","你是老师吗？","你是学生吗？","你是美国人吗？","你学习汉语吗？","你们是日本人吗？","你是校长吗？"];
+const $=s=>document.querySelector(s);
+const IC={
+home:`<path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/>`,
+cards:`<rect x="3" y="6" width="12" height="15" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v12"/>`,
+reset:`<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/>`,
+on:`<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>`,
+off:`<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 9l5 6M22 9l-5 6"/>`,
+full:`<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>`,
+dice:`<rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.2"/><circle cx="15.5" cy="8.5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="8.5" cy="15.5" r="1.2"/><circle cx="15.5" cy="15.5" r="1.2"/>`,
+stop:`<rect x="6" y="6" width="12" height="12" rx="2"/>`,
+replay:`<path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/>`,
+back:`<path d="M10 6l-6 6 6 6"/><path d="M4 12h16"/>`,
+trophy:`<path d="M8 4h8v6a4 4 0 0 1-8 0z"/><path d="M8 6H4a3 3 0 0 0 4 4M16 6h4a3 3 0 0 1-4 4M12 14v4M8 20h8"/>`};
+const ico=n=>'<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">'+IC[n]+'</svg>';
+const LANTERN='<svg viewBox="0 0 60 96"><rect x="20" y="2" width="20" height="7" rx="2" fill="#d9a62e"/><ellipse cx="30" cy="40" rx="26" ry="30" fill="#b3121b" stroke="#d9a62e" stroke-width="1.5"/><path d="M30 10v60M17 13c-8 17-8 41 0 55M43 13c8 17 8 41 0 55" stroke="#7a0c12" stroke-width="2" fill="none" opacity=".55"/><rect x="20" y="68" width="20" height="7" rx="2" fill="#d9a62e"/><path d="M30 75v14M25 75l-2 15M35 75l2 15" stroke="#d9a62e" stroke-width="2.5" stroke-linecap="round"/></svg>';
+function fillIcons(){document.querySelectorAll("[data-i]").forEach(e=>e.innerHTML=ico(e.dataset.i));document.querySelectorAll("[data-l]").forEach(e=>e.innerHTML=LANTERN)}
+let order=[0,1,2,3,4,5,6,7],opened=new Set(),sfxOn=true,ttsOn=true,rate=.9,cur=null,busy=false,toastT;
+
+/* ===== เสียงประกอบ ===== */
+let AC;
+function tone(f,d,t="sine",v=.05,delay=0){
+ if(!sfxOn)return;
+ try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();
+ const o=AC.createOscillator(),g=AC.createGain(),s=AC.currentTime+delay;
+ o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(.0001,s+d);
+ o.connect(g);g.connect(AC.destination);o.start(s);o.stop(s+d)}catch(e){}
+}
+const sfx={
+ click:()=>tone(520,.08,"triangle"),
+ flip:()=>{tone(300,.15,"sawtooth",.025);tone(450,.15,"sawtooth",.025,.07)},
+ spin:()=>tone(700,.05,"square",.02),
+ ok:()=>{tone(660,.15);tone(880,.25,"sine",.05,.12)},
+ win:()=>[523,659,784,1047,1319].forEach((f,i)=>tone(f,.3,"triangle",.05,i*.13))
+};
+
+/* ===== เสียงอ่านภาษาจีน ===== */
+const wave=$("#wave");
+let voices=[];
+function loadVoices(){voices=speechSynthesis.getVoices()}
+if("speechSynthesis" in window){loadVoices();speechSynthesis.addEventListener("voiceschanged",loadVoices)}
+function pickVoice(){
+ const zh=voices.filter(v=>{const l=v.lang.replace("_","-").toLowerCase();return l==="zh-cn"||l.startsWith("cmn-hans")||l==="zh-hans-cn"||l==="zh"});
+ const score=v=>(/natural|online|neural/i.test(v.name)?4:0)+(/google|microsoft|xiaoxiao|yunxi|ting|lili|huihui/i.test(v.name)?2:0)+(v.localService?0:1);
+ return zh.sort((a,b)=>score(b)-score(a))[0]||null;
+}
+function stopSpeak(){if("speechSynthesis" in window)speechSynthesis.cancel();wave.classList.remove("on")}
+function speak(text){
+ if(!ttsOn)return;
+ if(!("speechSynthesis" in window)){toast("เบราว์เซอร์นี้ไม่รองรับเสียงอ่าน กรุณาใช้ Chrome หรือ Edge");return}
+ stopSpeak();loadVoices();
+ const v=pickVoice();$("#vinfo").textContent=v?"เสียงที่ใช้: "+v.name+" ("+v.lang+")":"";
+ if(!v){toast("ไม่พบเสียงภาษาจีนกลาง (zh-CN) กรุณาติดตั้งหรือเลือกเสียงภาษาจีนกลางในระบบก่อน");return}
+ setTimeout(()=>{
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang="zh-CN";u.voice=v;u.rate=rate;u.pitch=1;
+  u.onstart=()=>wave.classList.add("on");
+  u.onend=u.onerror=()=>wave.classList.remove("on");
+  speechSynthesis.speak(u);
+ },80);
+}
+
+/* ===== หน้าจอ ===== */
+function show(id){
+ document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id));
+ if(id!=="question")stopSpeak();
+ window.scrollTo(0,0);
+}
+function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";clearTimeout(toastT);toastT=setTimeout(()=>t.style.display="none",4500)}
+
+/* ===== การ์ด ===== */
+function buildGrid(){
+ const g=$("#grid");g.innerHTML="";
+ order.forEach((qi,p)=>{
+  const c=document.createElement("div");c.className="card";c.dataset.p=p;c.tabIndex=0;
+  c.setAttribute("role","button");c.setAttribute("aria-label","การ์ดใบที่ "+(p+1));
+  c.innerHTML=`<div class="inner"><div class="face front"><b>${p+1}</b><i>福</i></div><div class="face back"><span class="n">${p+1}</span><div class="q">${Q[qi]}</div><em>เปิดแล้ว</em></div></div>`;
+  c.onclick=()=>{if(!busy){sfx.click();openCard(p)}};
+  c.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();c.click()}};
+  g.appendChild(c);
+ });
+ updateStatus();
+}
+function updateStatus(){
+ const n=opened.size;
+ $("#status").textContent=n===8?"คุณเปิดการ์ดครบแล้ว!":`เปิดแล้ว ${n}/8`;
+ $("#gRand").disabled=false;
+}
+function openCard(p){
+ if(opened.has(p)||busy)return;
+ busy=true;opened.add(p);
+ const c=$(`.card[data-p="${p}"]`);
+ sfx.flip();c.classList.add("flipped","opened");updateStatus();
+ setTimeout(()=>{sfx.ok();showQuestion(p);busy=false},950);
+}
+function showQuestion(p){
+ cur=p;
+ $("#qNo").textContent="การ์ดใบที่ "+(p+1);
+ const t=$("#qText");t.textContent=Q[order[p]];t.style.animation="none";void t.offsetWidth;t.style.animation="";
+ const done=opened.size===8;
+ $("#bNext").innerHTML=done?ico("trophy")+" ดูสรุปผล":ico("dice")+" สุ่มการ์ดใบถัดไป";
+ show("question");
+ setTimeout(()=>speak(Q[order[p]]),500);
+}
+function randomCard(){
+ if(busy)return;
+ const left=[...Array(8).keys()].filter(p=>!opened.has(p));
+ if(!left.length){toast("ไม่มีการ์ดเหลือให้สุ่มแล้ว กด รีเซ็ต เพื่อเริ่มใหม่");return}
+ busy=true;
+ const pick=left[Math.floor(Math.random()*left.length)];
+ let i=0,steps=14+Math.floor(Math.random()*4);
+ const cards=left.map(p=>$(`.card[data-p="${p}"]`));
+ let prev=null;
+ const tick=()=>{
+  prev&&prev.classList.remove("hl");
+  const last=i>=steps;
+  const c=last?$(`.card[data-p="${pick}"]`):cards[i%cards.length];
+  c.classList.add("hl");prev=c;sfx.spin();i++;
+  if(last){setTimeout(()=>{c.classList.remove("hl");busy=false;openCard(pick)},350)}
+  else setTimeout(tick,70+i*9);
+ };
+ tick();
+}
+function afterQuestion(next){
+ stopSpeak();
+ if(opened.size===8){sfx.win();show("summary");confetti();return}
+ show("cards");
+ if(next)setTimeout(randomCard,250);
+}
+function resetGame(shuffle){
+ stopSpeak();busy=false;opened.clear();
+ if(shuffle){for(let i=7;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]]}}
+ buildGrid();
+}
+function confetti(){
+ const e=["#b3121b","#d9a62e","#f3d27a","#7a0c12"];
+ for(let i=0;i<40;i++){const s=document.createElement("span");s.className="conf";s.style.cssText+=`background:${e[i%4]};width:${8+Math.random()*8}px;height:${14+Math.random()*10}px;border-radius:2px;font-size:0`;
+  s.style.left=Math.random()*100+"vw";s.style.animationDuration=(2+Math.random()*2.5)+"s";s.style.animationDelay=Math.random()*1.2+"s";
+  document.body.appendChild(s);setTimeout(()=>s.remove(),6000)}
+}
+
+/* ===== ปุ่มควบคุม ===== */
+$("#mStart").onclick=()=>{sfx.click();show("cards")};
+$("#mRand").onclick=()=>{sfx.click();show("cards");setTimeout(randomCard,400)};
+$("#mHow").onclick=()=>{sfx.click();$("#modal").classList.add("on")};
+$("#mClose").onclick=()=>$("#modal").classList.remove("on");
+$("#gRand").onclick=()=>{sfx.click();randomCard()};
+$("#tHome").onclick=()=>{sfx.click();show("menu")};
+$("#tGrid").onclick=()=>{sfx.click();if(!busy)show("cards")};
+$("#tReset").onclick=()=>{sfx.click();resetGame(false);show("cards")};
+$("#tSfx").onclick=()=>{sfxOn=!sfxOn;$("#tSfx").innerHTML=ico(sfxOn?"on":"off")+" <span>เสียงประกอบ: "+(sfxOn?"เปิด":"ปิด")+"</span>";sfx.click()};
+$("#tTts").onclick=()=>{
+ ttsOn=!ttsOn;
+ if(!ttsOn)stopSpeak();
+ $("#tTts").innerHTML=ico(ttsOn?"on":"off")+" <span>เสียงอ่าน: "+(ttsOn?"เปิด":"ปิด")+"</span>";
+ sfx.click();
+};
+$("#tFs").onclick=()=>{
+ if(!document.fullscreenElement){(document.documentElement.requestFullscreen||Promise.reject).call(document.documentElement).catch(()=>toast("เบราว์เซอร์ไม่อนุญาตให้เข้าโหมดเต็มหน้าจอ (ลองกด F11)"))}
+ else document.exitFullscreen();
+};
+document.addEventListener("fullscreenchange",()=>{$("#tFs").innerHTML=ico("full")+" <span>"+(document.fullscreenElement?"ออกจากเต็มจอ":"เต็มจอ")+"</span>"});
+$("#bPlay").onclick=()=>speak(Q[order[cur]]);
+$("#bStop").onclick=stopSpeak;
+$("#bReplay").onclick=()=>speak(Q[order[cur]]);
+$("#bBack").onclick=()=>{sfx.click();afterQuestion(false)};
+$("#bNext").onclick=()=>{sfx.click();afterQuestion(true)};
+$("#sAgain").onclick=()=>{sfx.click();resetGame(true);show("cards")};
+$("#speed").onclick=e=>{
+ const b=e.target.closest("button");if(!b)return;
+ rate=parseFloat(b.dataset.r);
+ document.querySelectorAll("#speed button").forEach(x=>x.classList.toggle("on",x===b));
+ speak(Q[order[cur]]);
+};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")$("#modal").classList.remove("on")});
+fillIcons();buildGrid();
+</script>
+</body>
+</html>
